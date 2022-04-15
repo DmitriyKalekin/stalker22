@@ -28,6 +28,7 @@ const (
 	MONGO_DB         = "jirabackup"
 	MONGO_COLLECTION = "project"
 	TELEGRAM_TOKEN   = "5390968093:AAHm74AS-MopGTOb1LeT6Z_unnkhFeFURA4"
+	WH_URL           = "https://2014-45-130-87-17.eu.ngrok.io" + "/tg" + TELEGRAM_TOKEN
 )
 
 var (
@@ -89,11 +90,11 @@ func main() {
 	))
 
 	r.Get("/posts", handlers.ListPosts)
-	r.Post("/tg", handlers.TgHandler)
+	r.Post("/tg"+TELEGRAM_TOKEN, handlers.TgHandler)
 
-	client := telegram.NewClient(TELEGRAM_TOKEN) //
+	client := telegram.NewClient(TELEGRAM_TOKEN)
 
-	resp, err := client.SetWebhook("https://15ba-217-25-217-143.eu.ngrok.io/tg")
+	resp, err := client.SetWebhook(WH_URL)
 
 	if err != nil {
 		log.Error(err)

@@ -4,10 +4,13 @@ import (
 	// "context"
 	"encoding/json"
 	// "github.com/go-chi/chi"
-	log "github.com/sirupsen/logrus"
+	// log "github.com/sirupsen/logrus"
+	// "io/ioutil"
 	// "io"
 	"github.com/DmitriyKalekin/stalker22/dto"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 // RespondwithJSON write json response format with application/json header
@@ -57,10 +60,30 @@ type Response struct {
 	Status string `json:"status"`
 }
 
+func UnescapeUnicodeCharactersInJSON(_jsonRaw json.RawMessage) (json.RawMessage, error) {
+	str, err := strconv.Unquote(strings.Replace(strconv.Quote(string(_jsonRaw)), `\\u`, `\u`, -1))
+	if err != nil {
+		return nil, err
+	}
+	return []byte(str), nil
+}
+
 func TgHandler(w http.ResponseWriter, r *http.Request) {
-	var res interface{}
-	json.NewDecoder(r.Body).Decode(&res)
-	log.Warnf("%#v", res)
+	// var res interface{}
+	// b, err := ioutil.ReadAll(r.Body)
+	// defer r.Body.Close()
+
+	// if err != nil {
+	// 	http.Error(w, err.Error(), 500)
+	// 	return
+	// }
+
+	// jsonRawUnescaped, _ := UnescapeUnicodeCharactersInJSON(b)
+
+	// log.Warn(string(jsonRawUnescaped))
+
+	// json.NewDecoder(r.Body).Decode(&res)
+	// log.Warn("%#v", res)
 	var rrr = Response{Status: "OK"}
 	RespondwithJSON(w, http.StatusOK, rrr)
 }

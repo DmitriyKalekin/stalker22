@@ -2,14 +2,16 @@ package telegram_api_client
 
 import (
 	"bytes"
+	"encoding/json"
 	// "encoding/json"
 	"fmt"
 	// dto "github.com/DmitriyKalekin/stalker22/telegram_api_client/json_dto"
 	// log "github.com/sirupsen/logrus"
-	assert "github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"testing"
+
+	assert "github.com/stretchr/testify/assert"
 )
 
 type MockClient struct {
@@ -56,7 +58,7 @@ func TestWrongTokenOnGetWebhookInfo(t *testing.T) {
 	// --- assert --------
 	assert.NotNil(t, info)
 	assert.Nil(t, err)
-	assert.EqualValues(t, typeof(WebhookInfo{}), typeof(info))
+	assert.EqualValues(t, typeof(APIResponse{}), typeof(info))
 	assert.EqualValues(t, false, info.Ok)
 	assert.EqualValues(t, http.StatusNotFound, info.ErrorCode)
 
@@ -79,15 +81,18 @@ func TestGetWebhookInfo(t *testing.T) {
 
 	// --- try --------
 	info, err := telegram_client.GetWebhookInfo()
+	var result WebhookInfo
+	json.Unmarshal(*info.Result, &result)
 
 	// --- assert --------
 	assert.NotNil(t, info)
 	assert.Nil(t, err)
-	assert.EqualValues(t, typeof(WebhookInfo{}), typeof(info))
+	assert.EqualValues(t, typeof(APIResponse{}), typeof(info))
 	assert.EqualValues(t, true, info.Ok)
-	assert.EqualValues(t, "", info.Result.Url)
-	assert.EqualValues(t, false, info.Result.HasCustomCertificate)
-	assert.EqualValues(t, []string(nil), info.Result.AllowedUpdates)
+
+	assert.EqualValues(t, "", result.Url)
+	assert.EqualValues(t, false, result.HasCustomCertificate)
+	assert.EqualValues(t, []string(nil), result.AllowedUpdates)
 }
 
 func TestWrongTokenOnSetWebhook(t *testing.T) {
@@ -112,10 +117,9 @@ func TestWrongTokenOnSetWebhook(t *testing.T) {
 	// --- assert --------
 	assert.NotNil(t, info)
 	assert.Nil(t, err)
-	assert.EqualValues(t, typeof(WebhookSetInfo{}), typeof(info))
+	assert.EqualValues(t, typeof(APIResponse{}), typeof(info))
 	assert.EqualValues(t, false, info.Ok)
 	assert.EqualValues(t, http.StatusNotFound, info.ErrorCode)
-
 }
 
 func TestNoHTTPSOnSetWebhook(t *testing.T) {
@@ -140,7 +144,7 @@ func TestNoHTTPSOnSetWebhook(t *testing.T) {
 	// --- assert --------
 	assert.NotNil(t, info)
 	assert.Nil(t, err)
-	assert.EqualValues(t, typeof(WebhookSetInfo{}), typeof(info))
+	assert.EqualValues(t, typeof(APIResponse{}), typeof(info))
 	assert.EqualValues(t, false, info.Ok)
 	assert.EqualValues(t, http.StatusBadRequest, info.ErrorCode)
 }
@@ -163,15 +167,18 @@ func TestWasSetWebhook(t *testing.T) {
 	// --- try --------
 	url := "https://15ba-217-25-217-143.eu.ngrok.io/tg"
 	info, err := telegram_client.SetWebhook(url)
+	var result bool
+	json.Unmarshal(*info.Result, &result)
 
 	// --- assert --------
 	assert.NotNil(t, info)
 	assert.Nil(t, err)
-	assert.EqualValues(t, typeof(WebhookSetInfo{}), typeof(info))
+	assert.EqualValues(t, typeof(APIResponse{}), typeof(info))
 	assert.EqualValues(t, true, info.Ok)
-	assert.EqualValues(t, true, info.Result)
 	assert.EqualValues(t, "Webhook was set", info.Description)
 	assert.EqualValues(t, 0, info.ErrorCode)
+
+	assert.EqualValues(t, true, result)
 }
 
 func TestAlreadySetWebhook(t *testing.T) {
@@ -192,13 +199,16 @@ func TestAlreadySetWebhook(t *testing.T) {
 	// --- try --------
 	url := "https://15ba-217-25-217-143.eu.ngrok.io/tg"
 	info, err := telegram_client.SetWebhook(url)
+	var result bool
+	json.Unmarshal(*info.Result, &result)
 
 	// --- assert --------
 	assert.NotNil(t, info)
 	assert.Nil(t, err)
-	assert.EqualValues(t, typeof(WebhookSetInfo{}), typeof(info))
+	assert.EqualValues(t, typeof(APIResponse{}), typeof(info))
 	assert.EqualValues(t, true, info.Ok)
-	assert.EqualValues(t, true, info.Result)
 	assert.EqualValues(t, "Webhook is already set", info.Description)
 	assert.EqualValues(t, 0, info.ErrorCode)
+
+	assert.EqualValues(t, true, result)
 }

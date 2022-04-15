@@ -44,8 +44,8 @@ func NewClient(token string) *TelegramApiClient {
 // Requires no parameters.
 // On success, returns a WebhookInfo object.
 // If the bot is using getUpdates, will return an object with the url field empty.
-func (client *TelegramApiClient) GetWebhookInfo() (WebhookInfo, error) {
-	var res WebhookInfo
+func (client *TelegramApiClient) GetWebhookInfo() (APIResponse, error) {
+	var res APIResponse
 	resp, err := client.HttpClient.Get(client.Url + "getWebhookInfo")
 
 	if err != nil {
@@ -65,8 +65,8 @@ func (client *TelegramApiClient) GetWebhookInfo() (WebhookInfo, error) {
 // If you'd like to make sure that the Webhook request comes from Telegram,
 // we recommend using a secret path in the URL, e.g. https://www.example.com/<token>.
 // Since nobody else knows your bot's token, you can be pretty sure it's us.
-func (client *TelegramApiClient) SetWebhook(wh_url string) (WebhookSetInfo, error) {
-	var res WebhookSetInfo
+func (client *TelegramApiClient) SetWebhook(wh_url string) (APIResponse, error) {
+	var res APIResponse
 	url := client.Url + "setWebhook?url=" + wh_url +
 		"&allowed_updates=[\"message\", \"edited_message\", \"channel_post\", \"edited_channel_post\", \"inline_query\", \"chosen_inline_result\", \"callback_query\", \"my_chat_member\", \"chat_member\", \"poll\", \"poll_answer\"]"
 
